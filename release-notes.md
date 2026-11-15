@@ -1,3 +1,23 @@
+# 1.4.5
+
+## 修复
+
+- **安装地址全部指向本仓库**：`package.json` 的 `dsh.install.tarball` / `zip` / `git` 原指 `YuJunZhiXue/dsh-purge`（已 404，安装必定失败），改为 `Mysterylhw/dsh-purge-plus` 的 `main` 分支；`repository` / `homepage` / `bugs` 同步更新。
+- **面板「检查更新」不再打空请求**：`lib/update.js` 的 `REPO` 常量原来是 `YuJunZhiXue/dsh-purge`、`STABLE_REF` 是 `master`，改成 `Mysterylhw/dsh-purge-plus` 与 `main`。原先点检查更新会拿到 404，永远显示无新版本。
+- **红队面板回退仓库名**：`lib/redteam/ui.js` 的 `githubRepoOf()` 默认值同步改成 `Mysterylhw/dsh-purge-plus`。
+- **欢迎弹窗的仓库链接**：`client.js` 里 `welcome.repo` 两处（zh / en）改成新仓库地址。
+- **示例内网地址脱敏**：`lib/redteam/client.js` 与 `lib/redteam/tools.js` 里作为示例出现的本机 Kali 内网 IP，改成中性占位（`192.168.1.10` / `<kali-host>`），`client.js` 已重新构建。
+- **README 安装命令**：`git clone`、registry 阻塞时的 tarball 地址、Releases 链接、`dsh://` 深链全部改指本仓库与 `main` 分支。
+- **CI**：`.github/workflows/release.yml` 的仓库判断、触发分支、Release 输出链接同步改成 `Mysterylhw/dsh-purge-plus` / `main`。
+
+## 仓库
+
+- 已跟踪文件 126 个、约 4.3 MB，无密钥、无 token、无 `.env`、无内网主机地址。
+- `.gitignore` 增补 `*.bak` / `*.bak-before-*`，本地编辑前的备份副本不再进仓库。
+- 维护者署名改为 `Mysterylhw`；上游原作者小杨的署名、MIT 许可证原文与来源链接按署名要求全部保留。
+
+---
+
 # 1.3.1
 
 ## 中文

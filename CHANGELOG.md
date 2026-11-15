@@ -16,6 +16,9 @@ Baseline: **1.2.0**. Everything below is what this fork adds, improves, or fixes
 | **安装地址** | `package.json` 的 `dsh.install.tarball` / `zip` / `git` 原指 `YuJunZhiXue/dsh-purge`（已 404，安装必定失败），改为本仓库 `Mysterylhw/dsh-purge-plus` 的 `main` 分支 |
 | **元数据** | `repository` / `homepage` / `bugs` 同步指向本仓库；原上游链接仍保留在 `NOTICE.md`、`README.md` 的署名段落，按 MIT 与署名要求不删 |
 | **内网地址脱敏** | `lib/redteam/client.js` 与 `lib/redteam/tools.js` 里作为示例出现的本机 Kali 内网 IP，改成中性占位（`192.168.1.10` / `<kali-host>`），重新构建 `client.js` |
+| **「检查更新」指向** | `lib/update.js` 的 `REPO` / `STABLE_REF` 原为 `YuJunZhiXue/dsh-purge` / `master`（404），改为 `Mysterylhw/dsh-purge-plus` / `main`；`lib/redteam/ui.js` 的 `githubRepoOf()` 默认值同步 |
+| **欢迎弹窗链接** | `client.js` 的 `welcome.repo`（zh / en 两处）改指本仓库 |
+| **CI 与深链** | `.github/workflows/release.yml` 的仓库判断、触发分支、Release 链接，以及 README 的 `dsh://` 一键安装深链，全部改指本仓库 `main` |
 
 ### 仓库
 
