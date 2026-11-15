@@ -20,6 +20,7 @@ Baseline: **1.2.0**. Everything below is what this fork adds, improves, or fixes
 | **欢迎弹窗链接** | `client.js` 的 `welcome.repo`（zh / en 两处）改指本仓库 |
 | **CI 与深链** | `.github/workflows/release.yml` 的仓库判断、触发分支、Release 链接，以及 README 的 `dsh://` 一键安装深链，全部改指本仓库 `main` |
 | **补丁结算归零** | 0.2.2 上原本 7 条 `skipped`，逐条查明后归位：`#14` / `#17` 补 0.2.2 锚点 → `applied`；`#80` / `#54` / `#60` / `#62` 上游已删目标 → `na`；`#86` 回滚补丁补 markers → `already`。现在 `skipped` 恒为 0 |
+| **适配 DSH 0.2.2-rc.3** | `dshTarget` 从 `0.2.2-rc.1` 提到 **`0.2.2-rc.3`**（`package.json` 两处）。rc.3 把 `throw new Error(...)` 全换成 `throw new SandboxEscalationError(msg, "SANDBOX_ESCALATION_*")`，三条补丁因此失配：`#13` 三条守卫整段换错误类、`#35` 同上且 `cancelled` 分支多一行 `approval.signal?.throwIfAborted()`、`#18` 删掉 `downstream.kind === "block"` 分支。三条都补了 rc.3 锚点，旧 pattern 保留以兼容 rc.1。实测 rc.3 原树 **55 applied / 9 already / 12 missing_file / 4 na / 0 pending** |
 
 ### 新增
 
