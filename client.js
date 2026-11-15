@@ -198,6 +198,7 @@ window.__ModuleLoader__.load({ id: "dsh-purge", factory: (require) => {
 			"metric.pendingShort": "待处理 {n}",
 			"metric.unmatchedShort": "没对上 {n}",
 			"metric.skipShort": "跳过 {n}",
+			"metric.missingShort": "未安装 {n}",
 			"metric.unlocated.count": "—",
 			"metric.shim": "shim",
 			"metric.shim.na": "本端不需要",
@@ -555,6 +556,7 @@ window.__ModuleLoader__.load({ id: "dsh-purge", factory: (require) => {
 			"metric.pendingShort": "Pending {n}",
 			"metric.unmatchedShort": "No match {n}",
 			"metric.skipShort": "Skipped {n}",
+			"metric.missingShort": "Not installed {n}",
 			"metric.unlocated.count": "—",
 			"metric.shim": "shim",
 			"metric.shim.na": "Not needed here",
@@ -1234,12 +1236,14 @@ body:not([data-ds-dark-theme]) .dshp-auth-legal{background:var(--dsw-alias-bg-la
 		}
 
 		function tallyPatches(rows) {
-			const out = { applied: 0, pending: 0, unmatched: 0, skipped: 0, total: 0 };
+			// missing_file 单独一档：目标插件/预设没装，不是「跳过」。
+			const out = { applied: 0, pending: 0, unmatched: 0, skipped: 0, missing: 0, total: 0 };
 			for (const row of rows || []) {
 				out.total += 1;
 				if (row.st === "applied" || row.st === "already") out.applied += 1;
 				else if (row.st === "pending") out.pending += 1;
 				else if (row.st === "unmatched") out.unmatched += 1;
+				else if (row.st === "missing_file") out.missing += 1;
 				else out.skipped += 1;
 			}
 			return out;
@@ -1268,6 +1272,7 @@ body:not([data-ds-dark-theme]) .dshp-auth-legal{background:var(--dsw-alias-bg-la
 				const notes = [];
 				if (tally.pending) notes.push(t("metric.pendingShort", { n: tally.pending }));
 				if (tally.unmatched) notes.push(t("metric.unmatchedShort", { n: tally.unmatched }));
+				if (tally.missing) notes.push(t("metric.missingShort", { n: tally.missing }));
 				if (tally.skipped) notes.push(t("metric.skipShort", { n: tally.skipped }));
 				const expanded = !!open[key];
 				const allDone = tally.applied === tally.total;
@@ -2068,7 +2073,7 @@ body:not([data-ds-dark-theme]) .dshp-auth-legal{background:var(--dsw-alias-bg-la
 			const desktopLikely = hostSurface === "desktop" || clientGuessSurface() === "desktop";
 			const sealedReady = !located && desktopLikely && !!(s && (s.asar_still_sealed || s.desktop_exe || s.desktop_install));
 			const patchesLost = !located && !!(s && s.patches_lost);
-			const tally = located ? tallyPatches(patchRowsOf(s)) : { applied: 0, pending: 0, unmatched: 0, skipped: 0, total: 0 };
+			const tally = located ? tallyPatches(patchRowsOf(s)) : { applied: 0, pending: 0, unmatched: 0, skipped: 0, missing: 0, total: 0 };
 			const total = tally.total;
 			const applied = tally.applied;
 			const pct = located && total ? Math.round((applied / total) * 100) : 0;
