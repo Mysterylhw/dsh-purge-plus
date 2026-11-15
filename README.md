@@ -4,7 +4,7 @@
 
 <h1 align="center">⚔️ DeepSeek Harness cybersecurity red-team tool (dsh-purge)</h1>
 
-<p align="center"><strong>Version 2.0.1 · fork</strong> · targets DSH <strong>0.2.2-rc.3</strong></p>
+<p align="center"><strong>Version 2.0.2 · fork</strong> · targets DSH <strong>0.2.2-rc.3</strong></p>
 
 > **This is a fork, not upstream.** Original project: [YuJunZhiXue/dsh-purge](https://github.com/YuJunZhiXue/dsh-purge) by **小杨** ([@YuJunZhiXue](https://github.com/YuJunZhiXue)), MIT licence (`Copyright (c) 2026 小杨`, kept verbatim here).
 > This branch is maintained by **[@Mysterylhw](https://github.com/Mysterylhw)** and only adds **0.2.2-rc.3 compatibility, a stronger prompt kernel, a rebuilt UI, and patch-anchor fixes**. It does not change what the plugin does.
@@ -14,7 +14,8 @@
 > **1.4.2 removes the input-box rewind button and all of its machinery** (backend routes, `/rewind` command, 3 patches).
 > **1.4.3 restores steer delivery**: reverts the two 1.4.2 patches that forced every prompt to followup (#85/#86) and adds #90, which latches wakes during the running phase so turn-tail messages are no longer stranded.
 > **1.4.4 adapts the red-team preset to official 0.2.x and adds a remote Kali drill host**: drops `toolFilter` / `backgroundMode` that the official subagent tool now rejects outright, and adds a `remote` section so a Windows host can drive a Kali box over SSH.
-> **2.0.1 points every address at this repository**: the install URLs, the in-panel update check and the CI repository guard all referenced the deleted upstream and returned 404. This is the current release; **80 patches** ship today.
+> **2.0.1 points every address at this repository**: the install URLs, the in-panel update check and the CI repository guard all referenced the deleted upstream and returned 404.
+> **2.0.2 targets DSH 0.2.2-rc.3**: rc.3 replaced `throw new Error(...)` with `throw new SandboxEscalationError(msg, code)`, which broke patches #13 / #35, and dropped a handler branch in #18; all three got rc.3 anchors. This is the current release; **80 patches** ship today.
 > Measured on an unpatched **0.2.2-rc.3** tree: **55 applied / 9 already / 12 missing_file / 4 na / 0 skipped / 0 pending** — see [docs/compat-0.2.2.md](docs/compat-0.2.2.md).
 > Changes and attribution: [NOTICE.md](NOTICE.md). Preconditions, no-warranty and legal terms: [DISCLAIMER.md](DISCLAIMER.md).
 > The upstream **non-commercial** term carries over: no paid resale, no gray- or black-market profit.
@@ -158,7 +159,7 @@ Hub one-click on [dsh-plugin.org](https://dsh-plugin.org/plugins/yujunzhixue/dsh
 For the desktop client you can also click the button (`dsh://` deep link):
 
 <p align="center">
-  <a href="dsh://plugin/install?id=dsh-purge&name=dsh-purge&version=2.0.1&repo=Mysterylhw%2Fdsh-purge-plus&permissions=%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%B3%A8%E5%85%A5%2C%E6%9C%AC%E6%9C%BA%E8%A1%A5%E4%B8%81%2C%E8%AE%BE%E7%BD%AE%E9%A1%B5&downloadUrl=https%3A%2F%2Fgithub.com%2FMysterylhw%2Fdsh-purge-plus%2Farchive%2Frefs%2Fheads%2Fmain.tar.gz"><strong>Install in desktop client</strong></a>
+  <a href="dsh://plugin/install?id=dsh-purge&name=dsh-purge&version=2.0.2&repo=Mysterylhw%2Fdsh-purge-plus&permissions=%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%B3%A8%E5%85%A5%2C%E6%9C%AC%E6%9C%BA%E8%A1%A5%E4%B8%81%2C%E8%AE%BE%E7%BD%AE%E9%A1%B5&downloadUrl=https%3A%2F%2Fgithub.com%2FMysterylhw%2Fdsh-purge-plus%2Farchive%2Frefs%2Fheads%2Fmain.tar.gz"><strong>Install in desktop client</strong></a>
 </p>
 
 ### After the command: three steps

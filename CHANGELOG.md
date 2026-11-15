@@ -7,6 +7,44 @@ Baseline: **1.2.0**. Everything below is what this fork adds, improves, or fixes
 
 ---
 
+## 2.0.2 — 适配 DSH 0.2.2-rc.3
+
+`2.0.1` 对应的 DSH 目标停在 `0.2.2-rc.1`。本想直接改 `dshTarget` 不动版本号，
+但 Release 附件里已经是旧的 rc.1 包，同一个 `2.0.1` 会对应两套不同内容 —— 下载的人
+无法区分。所以升到 `2.0.2`，让「rc.3 适配」有一个独立的版本号。
+
+### 适配
+
+| 项 | 变化 |
+| --- | --- |
+| **`dshTarget`** | `0.2.2-rc.1` → **`0.2.2-rc.3`**（`package.json` 两处：`dsh.dshTarget` 与顶层 `dshTarget`，CI 校验两者必须一致） |
+| **`#13 ESCALATION_WIDENING_EXEMPT`** | rc.3 把三条守卫（`WIDER_MODES` 校验 / `approval.approver` / `approval.agent`）从 `throw new Error(...)` 换成 `throw new SandboxEscalationError(msg, "SANDBOX_ESCALATION_*")`。补一整段 rc.3 pattern，replace 与原版同语义（整段注释掉，不拦截） |
+| **`#35 ESCALATION_NEVER_REJECT`** | 同上换错误类；`cancelled` 分支还多了 `approval.signal?.throwIfAborted();`。补 rc.3 pattern（含新增那行），replace 仍为 `case "allowed-once": default: return mode;` |
+| **`#18 REPEAT_TOOL_REMINDER_DISABLED`** | rc.3 删掉了 `if (downstream.kind === "block")` 分支，handler 体简化。补 rc.3 pattern，replace 不变（整个 handler 换成注释） |
+
+旧 pattern 全部保留，向下兼容 rc.1。
+
+### 升级时会遇到的第二个坑：`app.asar` 重新出现
+
+rc.3 升级把包解到 `resources\app\`，但**没删旧的 `app.asar`**。Electron 的加载
+优先级是 **`app.asar` > `app/`**，所以补丁写进 `app/` 完全不被读取，面板显示
+`asar_still_sealed: true`、补丁数看起来「少了几条」。
+
+处理：备份 `app.asar` → 挪走 → 重启。之后 `asar_still_sealed: false`，补丁才真正生效。
+挪走的包随时可以改回来回滚。仓库里附了 `unseal.cmd` 处理「宿主占用文件导致改名失败」
+的情况（注意：它是宿主的子进程时会被一起杀掉，需在独立窗口运行）。
+
+### 实测（DSH 0.2.2-rc.3）
+
+| 目标树 | applied | already | missing_file | na | pending |
+| --- | --- | --- | --- | --- | --- |
+| 原始 rc.3（`app.asar.bak-rc3`，未打补丁） | **55** | 9 | 12 | 4 | **0** |
+| 实装树（打完补丁） | **62** | — | — | 18 | **0** |
+
+与 rc.1 的 `55 / 9 / 12 / 4` 完全一致，说明补的三条 rc.3 锚点没有破坏其他补丁的匹配。
+
+---
+
 ## 2.0.1 — 发布到独立仓库，安装地址不再指向已删除的上游
 
 ### 修复

@@ -4,7 +4,7 @@
 
 <h1 align="center">⚔️ DeepSeek Harness 网络安全红队工具（dsh-purge）</h1>
 
-<p align="center"><strong>Version 2.0.1 · 本分支 fork</strong> · 适配 DSH <strong>0.2.2-rc.3</strong></p>
+<p align="center"><strong>Version 2.0.2 · 本分支 fork</strong> · 适配 DSH <strong>0.2.2-rc.3</strong></p>
 
 > **这是 fork，不是上游。** 原项目：[YuJunZhiXue/dsh-purge](https://github.com/YuJunZhiXue/dsh-purge)，原作者 **小杨**（[@YuJunZhiXue](https://github.com/YuJunZhiXue)），MIT 许可证（`Copyright (c) 2026 小杨`，本仓库原样保留）。
 > 本分支由 **[@Mysterylhw](https://github.com/Mysterylhw)** 维护，只做 **0.2.2-rc.3 适配 + 破甲内核升级 + 界面重做 + 补丁锚点修复**，不改变插件用途与能力范围。
@@ -14,7 +14,8 @@
 > **1.4.2 移除输入框的「回退」按钮及其作用**（后端路由、`/rewind` 命令、3 条补丁一起删）。
 > **1.4.3 恢复「插话发送」**：回滚 1.4.2 里把 prompt() 一律改成 followup 的两个补丁（#85/#86），并新增 #90 真正闩锁 running 态的唤醒，turn 收尾窗口的消息不再滞留。
 > **1.4.4 红队预设适配官方 0.2.x，新增远端 Kali 演练机**：去掉官方 subagent 工具已硬拦截的 `toolFilter` / `backgroundMode`，并新增 `remote` 配置，让 Windows 主机能经 SSH 驱动 Kali。
-> **2.0.1 把所有地址指回本仓库**：安装地址、面板「检查更新」、CI 仓库判断原先全指向已删除的上游，一律 404。这是当前版本，**补丁共 80 条**。
+> **2.0.1 把所有地址指回本仓库**：安装地址、面板「检查更新」、CI 仓库判断原先全指向已删除的上游，一律 404。
+> **2.0.2 适配 DSH 0.2.2-rc.3**：rc.3 把 `throw new Error(...)` 换成 `throw new SandboxEscalationError(msg, code)`，`#13` / `#35` 因此失配；`#18` 的 handler 也被简化。三条都补了 rc.3 锚点。这是当前版本，**补丁共 80 条**。
 > 在未打补丁的 **0.2.2-rc.3** 原树上实测：**55 applied / 9 already / 12 missing_file / 4 na / 0 skipped / 0 pending**，明细见 [docs/compat-0.2.2.md](docs/compat-0.2.2.md)。
 > 变更清单与署名要求见 [NOTICE.md](NOTICE.md)；使用前提、无担保与法律声明见 [DISCLAIMER.md](DISCLAIMER.md)。
 > 上游的**非商用**条款沿用：禁止商业售卖、付费倒卖与黑灰产牟利。
@@ -158,7 +159,7 @@ dsh plugin --profile desktop add dsh-purge
 桌面客户端也可以点按钮（`dsh://` 唤起）：
 
 <p align="center">
-  <a href="dsh://plugin/install?id=dsh-purge&name=dsh-purge&version=2.0.1&repo=Mysterylhw%2Fdsh-purge-plus&permissions=%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%B3%A8%E5%85%A5%2C%E6%9C%AC%E6%9C%BA%E8%A1%A5%E4%B8%81%2C%E8%AE%BE%E7%BD%AE%E9%A1%B5&downloadUrl=https%3A%2F%2Fgithub.com%2FMysterylhw%2Fdsh-purge-plus%2Farchive%2Frefs%2Fheads%2Fmain.tar.gz"><strong>唤起客户端一键安装</strong></a>
+  <a href="dsh://plugin/install?id=dsh-purge&name=dsh-purge&version=2.0.2&repo=Mysterylhw%2Fdsh-purge-plus&permissions=%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%B3%A8%E5%85%A5%2C%E6%9C%AC%E6%9C%BA%E8%A1%A5%E4%B8%81%2C%E8%AE%BE%E7%BD%AE%E9%A1%B5&downloadUrl=https%3A%2F%2Fgithub.com%2FMysterylhw%2Fdsh-purge-plus%2Farchive%2Frefs%2Fheads%2Fmain.tar.gz"><strong>唤起客户端一键安装</strong></a>
 </p>
 
 ### 装完都要做这三步

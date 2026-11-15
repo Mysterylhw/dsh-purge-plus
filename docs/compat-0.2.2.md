@@ -1,6 +1,6 @@
 # 0.2.2-rc.3 适配报告 / Compatibility note for DSH 0.2.2-rc.3
 
-适用版本：dsh-purge **2.0.1**（`dshTarget: 0.2.2-rc.3`，向下兼容 0.2.2-rc.1 / 0.2.1-rc.2 / 0.2.0-rc.2 的旧锚点）。
+适用版本：dsh-purge **2.0.2**（`dshTarget: 0.2.2-rc.3`，向下兼容 0.2.2-rc.1 / 0.2.1-rc.2 / 0.2.0-rc.2 的旧锚点）。
 
 ## 结论 / Summary
 
