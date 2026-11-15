@@ -21,6 +21,7 @@ node scripts/drift-check.mjs --app "<install>/resources/app"
 
 | dsh-purge | DSH | 干净树 applied / already / missing_file / na | 实装树 applied / na | 漂移 | 备注 |
 | --- | --- | --- | --- | --- | --- |
+| 2.0.1 | **0.2.2-rc.3** | 55 / 9 / 12 / 4 | 62 / 18 | 0 | 补 #13/#18/#35 的 rc.3 锚点（见下）；解封 asar 后全量重打 |
 | 2.0.1 | 0.2.2-rc.1 | 55 / 9 / 12 / 4 | 61 / 18 | 0 | 补 #14/#17 的 0.2.2 锚点；#54/#60/#62/#80 标 obsoleteWhen |
 | 1.4.5 | 0.2.2-rc.1 | 54 / 8 / 12 / 6 | — | — | 首次测 0.2.2；7 条 skipped 未归位 |
 | 1.4.4 | 0.2.2-rc.1 | — | — | — | 加 #91/#92（subagent 字段清理）与 #93~#97（远端 Kali） |
@@ -53,6 +54,25 @@ node scripts/drift-check.mjs --app "<install>/resources/app"
 | `#60 OFFICIAL_RUN_CODE_APPROVAL_NEUTRAL` | 四句 run_code 审批提示词 |
 | `#62 OFFICIAL_TOOL_ASK_FAILOPEN` | `approval === undefined` 与 `case "unavailable"` 两个分支 |
 | `#80 MINIMAL_OFFICIAL_TOOLSET` | `minimal.patch.yml` 里的 `tool-web` / `tool-fs-search`（本来就没有了）|
+
+### 0.2.2-rc.3
+
+上游把 `throw new Error(...)` 全换成了 `throw new SandboxEscalationError(msg, "SANDBOX_ESCALATION_*")`，
+并且删了几段 handler 分支。三条补丁因此失配：
+
+| 补丁 | rc.3 改了什么 | 处理 |
+| --- | --- | --- |
+| `#13 ESCALATION_WIDENING_EXEMPT` | 三条守卫（`WIDER_MODES` 校验、`approval.approver`、`approval.agent`）从 `throw new Error` 换成 `throw new SandboxEscalationError(msg, CODE)` | 补一整段 rc.3 pattern，replace 与原版同语义（整段注释掉） |
+| `#35 ESCALATION_NEVER_REJECT` | 同上；`cancelled` 分支还多了 `approval.signal?.throwIfAborted();` | 补 rc.3 pattern（含新增那行），replace 改成 `case "allowed-once": default: return mode;` |
+| `#18 REPEAT_TOOL_REMINDER_DISABLED` | 删掉了 `if (downstream.kind === "block") return {...}` 分支，handler 体只剩「有 reminder 就 prepend」 | 补 rc.3 pattern，replace 不变（整个 handler 换成注释） |
+
+**rc.3 升级带来的第二个坑：`app.asar` 重新出现。**
+升级程序把 rc.3 解包到 `resources\app\`，但没删旧的 `app.asar`。Electron 的
+加载优先级是 **`app.asar` > `app/`**，所以补丁写进 `app/` 完全不被读取，
+面板显示 `asar_still_sealed: true`。
+
+处理：备份 `app.asar` → 挪走 → 重启。之后 `asar_still_sealed: false`，
+补丁才会真正生效。挪走的包可以随时改回来回滚。
 
 ### 0.2.1-rc.2
 
