@@ -7,6 +7,52 @@ Baseline: **1.2.0**. Everything below is what this fork adds, improves, or fixes
 
 ---
 
+## 1.4.5 — 发布到独立仓库，安装地址不再指向已删除的上游
+
+### 修复
+
+| 项 | 变化 |
+| --- | --- |
+| **安装地址** | `package.json` 的 `dsh.install.tarball` / `zip` / `git` 原指 `YuJunZhiXue/dsh-purge`（已 404，安装必定失败），改为本仓库 `Mysterylhw/dsh-purge-plus` 的 `main` 分支 |
+| **元数据** | `repository` / `homepage` / `bugs` 同步指向本仓库；原上游链接仍保留在 `NOTICE.md`、`README.md` 的署名段落，按 MIT 与署名要求不删 |
+| **内网地址脱敏** | `lib/redteam/client.js` 与 `lib/redteam/tools.js` 里作为示例出现的本机 Kali 内网 IP，改成中性占位（`192.168.1.10` / `<kali-host>`），重新构建 `client.js` |
+
+### 仓库
+
+- 已跟踪文件共 126 个、4.3 MB，无密钥、无 token、无 `.env`。
+- `.gitignore` 增补 `*.bak` / `*.bak-before-*`：本地编辑前的备份副本不再进仓库。
+
+---
+
+## 1.4.4 — 红队预设适配官方 0.2.x，新增远端 Kali 演练机
+
+### 修复
+
+| 补丁 | 变化 |
+| --- | --- |
+| **#91** `SUBAGENT_STRIP_TOOLFILTER`（新增） | 红队预设里的 `tool-subagent` 曾配 `toolFilter.deny` 想约束子智能体。官方 `@deepseek-ai/dsh-tool-subagent` 的 `apply()` 首行已改成硬拦截：`for (const field of ["persona","toolFilter"]) if (Object.hasOwn(config, field)) throw ...`，留着这两行会让整个预设 `registered-broken`，面板显示「加载失败」。模板已移除；`installPreset()` 对已存在的用户预设做就地清除（`stripUnsupportedSubagentFields`），首次安装与 `needsCompositionRepair()` 也都覆盖 |
+| **#92** `SUBAGENT_DROP_BACKGROUNDMODE` | 一并清掉 4 处 `backgroundMode`（新版 schema 已无此字段，`z.object` 默认忽略未知键所以不报错，但保留会误导） |
+
+叶子节点约束不受影响：`maxDepth: 1` 是运行时硬约束 —— 父 `depth=0`、子 `depth=1`，子再派发时 `resolveChildDepth()` 算出 `depth=2 > 1`，直接抛 `SubagentDepthError`。比原来的 deny 列表更可靠，因为它不依赖模型自觉。
+
+### 新增
+
+| 能力 | 说明 |
+| --- | --- |
+| **#93** `REMOTE_KALI_ADAPT` | `config.json` 新增 `remote` 节（`enabled/host/user/port/identityFile/password`）。`detectKali(cfg)` 先看 remote，命中即返回 `{kali:true, source:'remote-ssh'}`，不再被 `osPlatform() !== 'linux'` 挡掉；`resolveTool()` 在远端模式下把 `tools[id]` 当 Kali 侧绝对路径，跳过本机 `existsSync`，并给出可直接执行的 `command`（`ssh -o BatchMode=yes ... <user>@<host> /usr/bin/nmap`） |
+| **#94** `REMOTE_SSH_PREFIX` | 导出 `remoteSshPrefix(cfg)`，统一拼装 ssh 前缀（端口非 22 才加 `-p`，配了私钥才加 `-i`） |
+| **#95** `ENV_ADAPT_REMOTE_STATUS` | `envAdaptStatus()` 新增 `remote-kali` 分支；面板顶部显示「远端 Kali… 已适配，N/15」，不再一律落进 `need-config` |
+| **#96** `PLATFORM_ENV_REMOTE_TEST` | 新增 `POST /redteam/api {op:'platformEnvRemoteTest'}`，只读探测：`echo RT_OK` + 读 `/etc/os-release` + 对所有工具跑 `command -v`。不安装、不写远端文件 |
+| **#97** `REMOTE_KALI_PANEL` | 环境适配页新增「远端 Kali 演练机」卡片（IP/用户名/端口/私钥/密码 + 「测试 Kali 连通」），渲染位置在 `draft` 加载完成后，避免 `draft` 为 `null` 时读 `remote` 抛错 |
+
+### 行为变化
+
+- 本机是 Windows 时不再只能「确认暂不配置」——填远端 Kali 即可判定就绪。
+- `runtimeHint` / `next` / `hint` 三处文案在远端模式下改说 ssh 执行方式，不再提示「建议在 Kali 虚拟机里跑」。
+- 远端模式下 `found`/`missing` 统计的是**登记过的远端路径**，不校验 Kali 上是否真的存在（避免每次刷新都连 SSH）。
+
+---
+
 ## 1.4.3 — 恢复「插话」，并把 next-step 竞态真正修掉
 
 1.4.2 的 **#85** 把 `prompt()` 一律改成 `followup`，副作用是**输入框的「插话发送」和队列条的「插话」都变成了排队**：点下去执行的是 `inbox.remove(id)` + `followup(message)`，消息被从 `next-turn` 摘掉、又插回同一个 `next-turn`，净状态不变——界面上就是「点了没反应」。
@@ -386,3 +432,31 @@ DSH **0.2.1-rc.2**，82 条补丁：
 - **`{{cwd}}` 变量**：0.2.1 的 `dsh-agent-loop` 只注册 `provider` / `model`，裸写 `{{cwd}}` 会让宿主抛 `unknown prompt variable` 并打断整轮。**1.4.1 已修**：`lib/cwd-variable.js` 补注册该变量，`cordis.patch.yml` 不再发变量，`sanitizeAssemblySections` 兜底转义。详见上方 1.4.1 一节。
 - **导航图标**：依赖「按 label 找到自己那一行」，设置外壳若改文案渲染方式，图标会回落成齿轮（功能不受影响）。
 - **未做**：插件市场发布、Web 端与桌面端一键同步、i18n 化全部文案（目前中英双语硬编码在 `client.js` 的 `zh` / `en` 两套字典里）。
+
+
+## [1.4.5] - 2026-11-06
+
+### 修复 / Fixed — 0.2.2-rc.1 兼容
+
+| 补丁 | 变化 |
+| --- | --- |
+| `#74 ASSEMBLE_BEFORE_PRESTEP` | 0.2.2 在 `claim()` 与 `assemble()` 之间插入了 `selection` / `toolSet` 解析，原来的两行相邻锚点不再匹配，补丁被静默 `skipped`。新增只锚 `const claimed` 单行的模式，注入点前移到 pre-step 入口。 |
+| `#67 AGENT_LOOP_MESSAGES_GUARD` | 同一段代码在 0.2.2 被 `try { }` 再包一层，缩进从 4 tabs 变 5 tabs。新增 5-tab 模式，旧 4-tab 模式保留以兼容 0.2.1。 |
+| `#82 DESKTOP_SHELL_PROFILE_FALLBACK` | 0.2.2 把 `lib/main.js` 里紧跟 import 的 region 头从 `packages/util/home-paths` 换成 `node_modules/.pnpm/mime@4.1.1`，旧锚点失效。新增只锚 import 单行的模式。 |
+
+### 变更 / Changed
+
+- `dshTarget` 从 `0.2.1-rc.2` 提到 `0.2.2-rc.1`。
+
+### 验证 / Verified
+
+0.2.2-rc.1 实机自检：80 条补丁，`applied 66 / skipped 7 / na 6 / missing_file 1`，`pending` 归零。
+剩余未应用项全部是「目标插件或预设未安装」的可选补丁：`dsh-liangshen`、`dsh-hooks-claude-code`、
+`dsh-hooks-codex`、自造 unrestricted 预设。
+
+### 说明 / Note
+
+- 桌面密封包状态下补丁写在 `resources/app`，必须先把 `app.asar` 挪走再启动才生效；只重启不换包，仍是归档里的旧代码。
+- `scripts/compat-check.mjs` 对 `desktop-shell` 一族补丁（#45/#46/#82/#83/#84）会误报 `missing_file`：
+  它把 `DSH_HOME` 指向临时目录，`findDesktopAppExecutable()` 因此定位不到安装目录。
+  这一族补丁以宿主内 `patchStatus` 的结果为准。
