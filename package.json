@@ -2,7 +2,7 @@
   "name": "dsh-purge",
   "version": "2.0.2",
   "description": "DeepSeek Harness 破甲：让所有模型都能破甲，不同模型可换不同提示词；默认提示词面向国模「小码酱」。Jailbreak for every model — swap prompts per model. 求 Star 收藏 ⭐ 如要二开，请查看署名要求部分",
-  "author": "Mysterylhw <https://github.com/Mysterylhw>",
+  "author": "Mystic-mycs <https://github.com/Mystic-mycs>",
   "contributors": [
     {
       "name": "小杨",
@@ -75,11 +75,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Mysterylhw/dsh-purge-plus.git"
+    "url": "git+https://github.com/Mystic-mycs/dsh-purge-plus.git"
   },
-  "homepage": "https://github.com/Mysterylhw/dsh-purge-plus#readme",
+  "homepage": "https://github.com/Mystic-mycs/dsh-purge-plus#readme",
   "bugs": {
-    "url": "https://github.com/Mysterylhw/dsh-purge-plus/issues"
+    "url": "https://github.com/Mystic-mycs/dsh-purge-plus/issues"
   },
   "dsh": {
     "bundle": {
@@ -97,9 +97,9 @@
     },
     "install": {
       "preferred": "tarball",
-      "tarball": "https://github.com/Mysterylhw/dsh-purge-plus/archive/refs/heads/main.tar.gz",
-      "zip": "https://github.com/Mysterylhw/dsh-purge-plus/archive/refs/heads/main.zip",
-      "git": "https://github.com/Mysterylhw/dsh-purge-plus.git"
+      "tarball": "https://github.com/Mystic-mycs/dsh-purge-plus/archive/refs/heads/main.tar.gz",
+      "zip": "https://github.com/Mystic-mycs/dsh-purge-plus/archive/refs/heads/main.zip",
+      "git": "https://github.com/Mystic-mycs/dsh-purge-plus.git"
     },
     "version": "2.0.2",
     "dshTarget": "0.2.2-rc.3"

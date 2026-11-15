@@ -1,20 +1,44 @@
 # 2.0.2
 
-## 修复
+## 适配 DSH 0.2.2-rc.3
 
-- **安装地址全部指向本仓库**：`package.json` 的 `dsh.install.tarball` / `zip` / `git` 原指 `YuJunZhiXue/dsh-purge`（已 404，安装必定失败），改为 `Mysterylhw/dsh-purge-plus` 的 `main` 分支；`repository` / `homepage` / `bugs` 同步更新。
-- **面板「检查更新」不再打空请求**：`lib/update.js` 的 `REPO` 常量原来是 `YuJunZhiXue/dsh-purge`、`STABLE_REF` 是 `master`，改成 `Mysterylhw/dsh-purge-plus` 与 `main`。原先点检查更新会拿到 404，永远显示无新版本。
-- **红队面板回退仓库名**：`lib/redteam/ui.js` 的 `githubRepoOf()` 默认值同步改成 `Mysterylhw/dsh-purge-plus`。
-- **欢迎弹窗的仓库链接**：`client.js` 里 `welcome.repo` 两处（zh / en）改成新仓库地址。
-- **示例内网地址脱敏**：`lib/redteam/client.js` 与 `lib/redteam/tools.js` 里作为示例出现的本机 Kali 内网 IP，改成中性占位（`192.168.1.10` / `<kali-host>`），`client.js` 已重新构建。
-- **README 安装命令**：`git clone`、registry 阻塞时的 tarball 地址、Releases 链接、`dsh://` 深链全部改指本仓库与 `main` 分支。
-- **CI**：`.github/workflows/release.yml` 的仓库判断、触发分支、Release 输出链接同步改成 `Mysterylhw/dsh-purge-plus` / `main`。
+`2.0.1` 的 `dshTarget` 停在 `0.2.2-rc.1`。rc.3 升级后三条补丁失配，补齐锚点后升到 `2.0.2`。
 
-## 仓库
+### 三条锚点失配的原因
 
-- 已跟踪文件 126 个、约 4.3 MB，无密钥、无 token、无 `.env`、无内网主机地址。
-- `.gitignore` 增补 `*.bak` / `*.bak-before-*`，本地编辑前的备份副本不再进仓库。
-- 维护者署名改为 `Mysterylhw`；上游原作者小杨的署名、MIT 许可证原文与来源链接按署名要求全部保留。
+rc.3 把 `throw new Error(...)` 全换成了 `throw new SandboxEscalationError(msg, "SANDBOX_ESCALATION_*")`：
+
+| 补丁 | rc.3 改了什么 | 处理 |
+| --- | --- | --- |
+| `#13 ESCALATION_WIDENING_EXEMPT` | 三条守卫（`WIDER_MODES` 校验 / `approval.approver` / `approval.agent`）整段换错误类 | 补一整段 rc.3 pattern，replace 与原版同语义（整段注释掉，不拦截） |
+| `#35 ESCALATION_NEVER_REJECT` | 同上；`cancelled` 分支还多了 `approval.signal?.throwIfAborted();` | 补 rc.3 pattern（含新增那行），replace 仍为 `case "allowed-once": default: return mode;` |
+| `#18 REPEAT_TOOL_REMINDER_DISABLED` | 删掉了 `if (downstream.kind === "block")` 分支，handler 体简化 | 补 rc.3 pattern，replace 不变（整个 handler 换成注释） |
+
+旧 pattern 全部保留，向下兼容 rc.1。
+
+### 升级时遇到的第二个坑：`app.asar` 重新出现
+
+rc.3 升级把包解到 `resources/app/`，但**没删旧的 `app.asar`**。Electron 的加载优先级是
+**`app.asar` > `app/`**，所以补丁写进 `app/` 完全不被读取，面板显示 `asar_still_sealed: true`、
+补丁数看起来「少了几条」。
+
+处理：备份 `app.asar` → 挪走 → 重启。之后 `asar_still_sealed: false`，补丁才真正生效。
+挪走的包随时可以改回来回滚。仓库里附了 `unseal.cmd` 处理「宿主占用文件导致改名失败」的情况。
+
+### 实测
+
+| 目标树 | applied | already | missing_file | na | pending |
+| --- | --- | --- | --- | --- | --- |
+| 原始 rc.3（`app.asar.bak-rc3`，未打补丁） | **55** | 9 | 12 | 4 | **0** |
+| 实装树（打完补丁） | **62** | — | — | 18 | **0** |
+
+与 rc.1 的 `55 / 9 / 12 / 4` 一致，说明补的三条 rc.3 锚点没有破坏其他补丁的匹配。
+
+### 本版还包含
+
+- 版本号 `2.0.1` → `2.0.2`（同号不再对应两套内容）
+- `package.json` 的 `version` / `dsh.version` / 两处 `dshTarget` 全部一致，CI 会校验
+- 面板版本下拉只保留 `v2.0.2`（此前 `v1.x` 历史 tag 已删，见 `docs/tags-archive.md`）
 
 ---
 
