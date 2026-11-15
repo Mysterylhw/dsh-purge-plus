@@ -4,15 +4,17 @@
 
 <h1 align="center">⚔️ DeepSeek Harness cybersecurity red-team tool (dsh-purge)</h1>
 
-<p align="center"><strong>Version 2.0.1 · fork</strong> · targets DSH <strong>0.2.1-rc.2</strong></p>
+<p align="center"><strong>Version 2.0.1 · fork</strong> · targets DSH <strong>0.2.2-rc.1</strong></p>
 
 > **This is a fork, not upstream.** Original project: [YuJunZhiXue/dsh-purge](https://github.com/YuJunZhiXue/dsh-purge) by **小杨** ([@YuJunZhiXue](https://github.com/YuJunZhiXue)), MIT licence (`Copyright (c) 2026 小杨`, kept verbatim here).
-> This branch is maintained by **[@Mysterylhw](https://github.com/Mysterylhw)** and only adds **0.2.1-rc.2 compatibility, a stronger prompt kernel, a rebuilt UI, and one patch-anchor fix**. It does not change what the plugin does.
+> This branch is maintained by **[@Mysterylhw](https://github.com/Mysterylhw)** and only adds **0.2.2-rc.1 compatibility, a stronger prompt kernel, a rebuilt UI, and patch-anchor fixes**. It does not change what the plugin does.
 > What changed against the previous release (1.2.0), item by item: **[CHANGELOG.md](CHANGELOG.md)**.
 > 1.4.0 borrows the approval tier, audit trail, strict JSON boundary and revision guard from [Minglink/dsh-infinite-gen-5](https://github.com/Minglink/dsh-infinite-gen-5); scope and boundaries in [NOTICE.md](NOTICE.md).
 > **1.4.1 fixes the unknown prompt variable {{cwd}} crash on install**: 0.2.1 registers provider/model only, so this plugin now registers cwd itself and stops emitting the variable from config.
-> **1.4.2 removes the input-box rewind button and all of its machinery** (backend routes, `/rewind` command, 3 patches): 82 patches -> 79.
+> **1.4.2 removes the input-box rewind button and all of its machinery** (backend routes, `/rewind` command, 3 patches).
 > **1.4.3 restores steer delivery**: reverts the two 1.4.2 patches that forced every prompt to followup (#85/#86) and adds #90, which latches wakes during the running phase so turn-tail messages are no longer stranded.
+> **1.4.4 adapts the red-team preset to official 0.2.x and adds a remote Kali drill host**: drops `toolFilter` / `backgroundMode` that the official subagent tool now rejects outright, and adds a `remote` section so a Windows host can drive a Kali box over SSH.
+> **2.0.1 points every address at this repository**: the install URLs, the in-panel update check and the CI repository guard all referenced the deleted upstream and returned 404. This is the current release; **80 patches** ship today.
 > Changes and attribution: [NOTICE.md](NOTICE.md). Preconditions, no-warranty and legal terms: [DISCLAIMER.md](DISCLAIMER.md).
 > The upstream **non-commercial** term carries over: no paid resale, no gray- or black-market profit.
 
@@ -25,7 +27,7 @@
   <a href="https://github.com/Mysterylhw/dsh-purge-plus/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-65a30d?style=flat" alt="MIT license"></a>
   <a href="https://awesome-dsh-plugin.com"><img src="https://awesome-dsh-plugin.com/badge.svg" alt="awesome · DSH plugin"></a>
   <a href="https://deepseek.stream/plugins/dsh-purge"><img src="https://img.shields.io/badge/Hub-dsh--purge-1a73e8" alt="DeepSeek Harness Hub"></a>
-  <a href="https://www.deepseek.com/harness/"><img src="https://img.shields.io/badge/dsh-0.2.1--rc.2-blue" alt="DSH"></a>
+  <a href="https://www.deepseek.com/harness/"><img src="https://img.shields.io/badge/dsh-0.2.2--rc.1-blue" alt="DSH"></a>
   <br>
   <img src="https://img.shields.io/badge/Node.js-%3E%3D18-339933?logo=node.js&logoColor=fff" alt="Node.js">
   <img src="https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=000" alt="JavaScript">
@@ -39,9 +41,9 @@
   <a href="README.md">English</a> | <a href="README.zh-CN.md">中文</a>
 </p>
 
-> **Upstream status.** The original author has paused upstream development (no new releases, issues / PRs not taken). This fork is maintained only so the official 0.2.1-rc.2 build installs and its UI works; no long-term tracking is promised. When upstream resumes, prefer it.
+> **Upstream status.** The original author has paused upstream development (no new releases, issues / PRs not taken). This fork is maintained only so the official 0.2.2-rc.1 build installs and its UI works; no long-term tracking is promised. When upstream resumes, prefer it.
 
-> **Official Web and the official desktop app are both supported.** Official `dsh web` uses profile `web`. The official desktop EXE (DeepSeek Harness **0.2.1-rc.2**) uses profile `desktop`. Install and Apply them separately. This release targets dsh 0.2, including 0.2.1-rc.2. Older dsh builds need the matching older plugin. Community Desktop is not maintained.
+> **Official Web and the official desktop app are both supported.** Official `dsh web` uses profile `web`. The official desktop EXE (DeepSeek Harness **0.2.2-rc.1**) uses profile `desktop`. Install and Apply them separately. This release targets dsh 0.2, including 0.2.2-rc.1. Older dsh builds need the matching older plugin. Community Desktop is not maintained.
 >
 > Adding the plugin to a profile does not patch the host. Open **Settings → Purge** → **Apply**. A successful Apply restarts; an unfinished Apply does not. After the restart, start a new chat - that is when the inject enters the session.
 >
@@ -125,7 +127,7 @@ Using them without attribution, hiding the source, or passing them off as your o
 
 The latest plugin supports **dsh 0.2** only — do not apply it to 0.1.x.
 
-- **dsh 0.2** (official desktop **0.2.1-rc.2** / 0.2.0-rc.2 / official `dsh web`): use **1.2.0** or newer. This page installs that line.
+- **dsh 0.2** (official desktop **0.2.2-rc.1** / 0.2.1-rc.2 / 0.2.0-rc.2 / official `dsh web`): use **1.4.4** or newer. This page installs that line (**2.0.1**).
 - **dsh 0.1.7** (incl. rc.1 / rc.2): use **1.1.39** or older — pick the tag on [Releases](https://github.com/Mysterylhw/dsh-purge-plus/releases).
 
 Unmatched patches stay pending or skipped; nothing is rewritten blindly.

@@ -11,7 +11,7 @@ This repository is a **fork** of **[YuJunZhiXue/dsh-purge](https://github.com/Yu
 | 上游仓库 | https://github.com/YuJunZhiXue/dsh-purge |
 | 上游许可证 | MIT，`Copyright (c) 2026 小杨`（见 [LICENSE](LICENSE)，本分支原样保留） |
 | 本分支 | 由 **Mysterylhw** 维护，仅做版本适配与体验优化 |
-| 本分支版本 | 2.0.1，`dshTarget: 0.2.1-rc.2` |
+| 本分支版本 | 2.0.1，`dshTarget: 0.2.2-rc.1` |
 
 上游 README 要求：**借用本项目的名称、思路、代码或提示词，必须署名并写明来源仓库**。本仓库保留原作者署名、上游链接与原始 MIT 许可证文本；这是使用条件，不是可选项。
 
@@ -23,9 +23,10 @@ The upstream project requires attribution and a link back to its repository when
 
 只改「适配新版 + 界面 + 一处补丁锚点」，不改变插件的用途与能力范围。
 
-**适配 DSH 0.2.1-rc.2**
+**适配 DSH 0.2.2-rc.1**
 
-- `dshTarget` 提到 `0.2.1-rc.2`；补网页版提示词迁移到新包 `dsh-harness-dev-context` 后的锚点（#32 / #53），补齐回退标记锚点（#77）。
+- `dshTarget` 从 `0.2.1-rc.2` 提到 `0.2.2-rc.1`（1.4.4 起），`package.json` 两处字段已统一。0.2.2 把 `claim()` 与 `assemble()` 之间插入了 `selection` / `toolSet` 解析、给 `agent-loop` 再包一层 `try`、换掉 `lib/main.js` 的 region 头，三条旧锚点因此失效：`#74` / `#67` / `#82` 各补了新模式，旧 0.2.1 模式保留。
+- 补网页版提示词迁移到新包 `dsh-harness-dev-context` 后的锚点（#32 / #53），补齐回退标记锚点（#77）。
 - 新增 `scripts/compat-check.mjs`：直接从封着的 `app.asar` 或解开的 `app/` 取补丁目标文件跑全量引擎，输出每条补丁状态，退出码可进 CI。
 
 **破甲内核 v3**（`lib/core.js` 的 `STRONG_INTRO`）

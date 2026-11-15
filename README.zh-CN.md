@@ -4,15 +4,17 @@
 
 <h1 align="center">⚔️ DeepSeek Harness 网络安全红队工具（dsh-purge）</h1>
 
-<p align="center"><strong>Version 2.0.1 · 本分支 fork</strong> · 适配 DSH <strong>0.2.1-rc.2</strong></p>
+<p align="center"><strong>Version 2.0.1 · 本分支 fork</strong> · 适配 DSH <strong>0.2.2-rc.1</strong></p>
 
 > **这是 fork，不是上游。** 原项目：[YuJunZhiXue/dsh-purge](https://github.com/YuJunZhiXue/dsh-purge)，原作者 **小杨**（[@YuJunZhiXue](https://github.com/YuJunZhiXue)），MIT 许可证（`Copyright (c) 2026 小杨`，本仓库原样保留）。
-> 本分支由 **[@Mysterylhw](https://github.com/Mysterylhw)** 维护，只做 **0.2.1-rc.2 适配 + 破甲内核升级 + 界面重做 + 一处补丁锚点修复**，不改变插件用途与能力范围。
+> 本分支由 **[@Mysterylhw](https://github.com/Mysterylhw)** 维护，只做 **0.2.2-rc.1 适配 + 破甲内核升级 + 界面重做 + 补丁锚点修复**，不改变插件用途与能力范围。
 > 逐条对比上一版（1.2.0）优化与新增了什么：**[CHANGELOG.md](CHANGELOG.md)**。
 > 1.4.0 的审批档位 / 审计流水 / 严格 JSON / 修订号借鉴了 [Minglink/dsh-infinite-gen-5](https://github.com/Minglink/dsh-infinite-gen-5)，来源与边界见 [NOTICE.md](NOTICE.md)。
 > **1.4.1 修掉「装完就报 unknown prompt variable {{cwd}}」**：0.2.1 只注册 provider / model，本插件已补注册 cwd 并不再让配置发变量。
-> **1.4.2 移除输入框的「回退」按钮及其作用**（后端路由、`/rewind` 命令、3 条补丁一起删），补丁总数 82 → 79。
+> **1.4.2 移除输入框的「回退」按钮及其作用**（后端路由、`/rewind` 命令、3 条补丁一起删）。
 > **1.4.3 恢复「插话发送」**：回滚 1.4.2 里把 prompt() 一律改成 followup 的两个补丁（#85/#86），并新增 #90 真正闩锁 running 态的唤醒，turn 收尾窗口的消息不再滞留。
+> **1.4.4 红队预设适配官方 0.2.x，新增远端 Kali 演练机**：去掉官方 subagent 工具已硬拦截的 `toolFilter` / `backgroundMode`，并新增 `remote` 配置，让 Windows 主机能经 SSH 驱动 Kali。
+> **2.0.1 把所有地址指回本仓库**：安装地址、面板「检查更新」、CI 仓库判断原先全指向已删除的上游，一律 404。这是当前版本，**补丁共 80 条**。
 > 变更清单与署名要求见 [NOTICE.md](NOTICE.md)；使用前提、无担保与法律声明见 [DISCLAIMER.md](DISCLAIMER.md)。
 > 上游的**非商用**条款沿用：禁止商业售卖、付费倒卖与黑灰产牟利。
 
@@ -25,7 +27,7 @@
   <a href="https://github.com/Mysterylhw/dsh-purge-plus/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-65a30d?style=flat" alt="MIT license"></a>
   <a href="https://awesome-dsh-plugin.com"><img src="https://awesome-dsh-plugin.com/badge.svg" alt="awesome · DSH plugin"></a>
   <a href="https://deepseek.stream/plugins/dsh-purge"><img src="https://img.shields.io/badge/Hub-dsh--purge-1a73e8" alt="DeepSeek Harness Hub"></a>
-  <a href="https://www.deepseek.com/harness/"><img src="https://img.shields.io/badge/dsh-0.2.1--rc.2-blue" alt="DSH"></a>
+  <a href="https://www.deepseek.com/harness/"><img src="https://img.shields.io/badge/dsh-0.2.2--rc.1-blue" alt="DSH"></a>
   <br>
   <img src="https://img.shields.io/badge/Node.js-%3E%3D18-339933?logo=node.js&logoColor=fff" alt="Node.js">
   <img src="https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=000" alt="JavaScript">
@@ -39,9 +41,9 @@
   <a href="README.md">English</a> | <a href="README.zh-CN.md">中文</a>
 </p>
 
-> **上游维护状态。** 原作者因工作安排暂停更新上游（不再发版、暂不收 issue / PR）。本分支只为「官方 0.2.1-rc.2 能装上、界面能用」而维护，不承诺长期跟进；上游恢复后请优先回到上游。
+> **上游维护状态。** 原作者因工作安排暂停更新上游（不再发版、暂不收 issue / PR）。本分支只为「官方 0.2.2-rc.1 能装上、界面能用」而维护，不承诺长期跟进；上游恢复后请优先回到上游。
 
-> **官方 Web 和官方桌面端都支持。** 官方 `dsh web` 用 profile `web`；官方桌面 EXE（DeepSeek Harness **0.2.1-rc.2**）用 profile `desktop`。两边分开安装、分开点「应用」。当前版本适配 dsh 0.2（含 0.2.1-rc.2）；更早的 dsh 用对应的老版本插件。社区桌面端不维护。
+> **官方 Web 和官方桌面端都支持。** 官方 `dsh web` 用 profile `web`；官方桌面 EXE（DeepSeek Harness **0.2.2-rc.1**）用 profile `desktop`。两边分开安装、分开点「应用」。当前版本适配 dsh 0.2（含 0.2.2-rc.1）；更早的 dsh 用对应的老版本插件。社区桌面端不维护。
 >
 > 写进 profile 还不会改宿主。打开 **设置 → Purge** → **应用**。成功会自动重启；补丁没打完不重启。重启后新开一轮对话，注入才进当前会话。
 >
@@ -125,7 +127,7 @@ Harness 不只是把问题交给模型。它还会在运行时改提示词、审
 
 最新版只支持 **dsh 0.2**，不要拿它去打 0.1.x。
 
-- **dsh 0.2**（官方桌面 **0.2.1-rc.2** / 0.2.0-rc.2 / 官方 `dsh web`）：用 **1.2.0** 及以上。本页命令装的就是这一档。
+- **dsh 0.2**（官方桌面 **0.2.2-rc.1** / 0.2.1-rc.2 / 0.2.0-rc.2 / 官方 `dsh web`）：用 **1.4.4** 及以上。本页命令装的就是这一档（**2.0.1**）。
 - **dsh 0.1.7**（含 rc.1 / rc.2）：用 **1.1.39** 及更早 —— 在 [Releases](https://github.com/Mysterylhw/dsh-purge-plus/releases) 里选对应标签。
 
 对不上的补丁会显示待应用或跳过，不会乱改文件。
