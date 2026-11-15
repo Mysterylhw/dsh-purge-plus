@@ -19,6 +19,15 @@ Baseline: **1.2.0**. Everything below is what this fork adds, improves, or fixes
 | **「检查更新」指向** | `lib/update.js` 的 `REPO` / `STABLE_REF` 原为 `YuJunZhiXue/dsh-purge` / `master`（404），改为 `Mysterylhw/dsh-purge-plus` / `main`；`lib/redteam/ui.js` 的 `githubRepoOf()` 默认值同步 |
 | **欢迎弹窗链接** | `client.js` 的 `welcome.repo`（zh / en 两处）改指本仓库 |
 | **CI 与深链** | `.github/workflows/release.yml` 的仓库判断、触发分支、Release 链接，以及 README 的 `dsh://` 一键安装深链，全部改指本仓库 `main` |
+| **补丁结算归零** | 0.2.2 上原本 7 条 `skipped`，逐条查明后归位：`#14` / `#17` 补 0.2.2 锚点 → `applied`；`#80` / `#54` / `#60` / `#62` 上游已删目标 → `na`；`#86` 回滚补丁补 markers → `already`。现在 `skipped` 恒为 0 |
+
+### 新增
+
+| 能力 | 说明 |
+| --- | --- |
+| **`obsoleteWhen`** | 补丁可声明「上游已删除该目标」的判据（正则数组，匹配**新上游特征**而非旧原文）。命中即判 `na`（不适用），不再混进 `skipped`（跳过）。`applyPatches` 的 `rollupPatchStatus` 与 `patchStatus` 两条路径都已接入 |
+
+`na` 与 `skipped` 的区别：`skipped` 是「文件在、原文没匹配上、但还不能断定上游删了它」，可能只是锚点没覆盖，需要补；`na` 是「补丁自己声明了上游已删目标的判据，正则命中即证明本代无事可做」。
 
 ### 仓库
 

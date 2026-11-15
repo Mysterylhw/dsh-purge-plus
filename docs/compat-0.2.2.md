@@ -6,10 +6,10 @@
 
 **80 条补丁在 0.2.2-rc.1 上全部结算，`pending` 为 0，没有一条因锚点失配卡住。**
 
-| 目标树 | applied | already | missing_file | skipped | pending |
-| --- | --- | --- | --- | --- | --- |
-| 原始 0.2.2-rc.1（`app.asar.bak`，未打补丁） | **54** | 8 | 12 | 6 | **0** |
-| 已打补丁（`resources/app`，当前实装） | 0 | 61 | 12 | 7 | **0** |
+| 目标树 | applied | already | missing_file | na | skipped | pending |
+| --- | --- | --- | --- | --- | --- | --- |
+| 原始 0.2.2-rc.1（`app.asar.bak`，未打补丁） | **55** | 9 | 12 | 4 | **0** | **0** |
+| 已打补丁（`resources/app`，当前实装） | 2 | 62 | 12 | 4 | **0** | **0** |
 
 两张表口径不同但结论一致：干净树上 54 条能直接打进去、8 条本来就是目标态；打过的树上 61 条已是完成态。
 
@@ -33,9 +33,9 @@ for (const field of ["persona","toolFilter"]) if (Object.hasOwn(config, field)) 
 
 红队预设里残留的 `toolFilter` / `backgroundMode` 会让整个预设 `registered-broken`、面板显示「加载失败」。1.4.4 的 `#91` / `#92` 负责清除，`installPreset()` 对已存在的用户预设做就地清理。
 
-## 8 条 already 为什么不是异常
+## 9 条 already 为什么不是异常
 
-`#2` `#3` `#12` `#21` `#24` `#50` `#73` `#85` 都是**回滚型补丁**：它们的目标态就是上游原文。干净树本来就是原文，所以判 `already` 是正确行为，不是「补丁早就存在」。
+`#2` `#3` `#12` `#21` `#24` `#50` `#73` `#85` `#86` 都是**回滚型补丁**：它们的目标态就是上游原文。干净树本来就是原文，所以判 `already` 是正确行为，不是「补丁早就存在」。
 
 以 `#85 STEER_RESTORE_PROMPT` 为例，它把 1.4.2 写进去的
 
@@ -63,9 +63,28 @@ else agent.followup(message);
 | `#45` `#46` `#82` `#83` `#84` | 桌面壳入口不在解开的 `resources/app` 里（密封包状态下的已知误报） |
 | `#76` | 自造 unrestricted 预设未安装 |
 
-## 6 条 skipped 是条件不满足
+## skipped 归零：4 条 obsolete 判 na，其余全部结算
 
-`#14`（已有更高优先级的授权路径）、`#80`（极简预设未启用）、`#54`（交付语已被手动改过）、`#60` / `#62`（官方审批链版本差异）、`#86`（队列 steer 的 1.4.2 改动本就不存在）。
+2.0.1 起 `skipped` 一律为 **0**。原先那 7 条各自归位：
+
+| 补丁 | 归位 | 说明 |
+| --- | --- | --- |
+| `#14` | **applied** | 补了 0.2.2 锚点：`displayReason` 从对象字面量变成 `escalationDisplayReason(mode, justification)` 函数调用，旧 pattern 少这一行整段失配 |
+| `#17` | **applied** | 补了 0.2.2 锚点：`editIntent` 收敛成 `requirePresent(target, actor, "edit")` 一行代理；同时把 `markers` 改成 `markersAny`，原来要求两条全中导致打了也判 skipped |
+| `#80` | **na** | 0.2.2 的 `minimal.patch.yml` 本来就没有 `tool-web` / `tool-fs-search`，「恢复官方极简工具表」天然成立，无对象可改 |
+| `#54` | **na** | 上游删了那两句交付物提示词（`Static Web guidance` / `Do not call present`） |
+| `#60` | **na** | 上游重写 `dsh-tools`，四句 run_code 审批提示词一句不剩 |
+| `#62` | **na** | 同上，`approval === undefined` 与 `case "unavailable"` 两个分支都不存在了 |
+| `#86` | **already** | 回滚型补丁：0.2.2 的 `case "steer"` 本就是 `agent.steer(message)`，目标态天然成立。补了 markers 才能判 already |
+
+### na 与 skipped 的区别
+
+- `skipped`：文件在、原文没匹配上、但还不能断定上游删了它 —— 可能只是锚点没覆盖到，需要补。
+- `na`：补丁用 `obsoleteWhen` 声明了「上游已删除该目标的判据」，正则命中即证明本代无事可做。
+
+`obsoleteWhen` 匹配的是**新上游特征**，不是旧原文。例如 `#60`/`#62` 用的是
+`^//#region lib/types/schema\.js$`（0.2.2 的 `dsh-tools/lib/index.js` 已退化成
+schema/types 打包），`#54` 用 `PRESENT_OPEN_PATH`，`#80` 用 `- id: persistent-shell`。
 
 ## 复现 / Reproduce
 

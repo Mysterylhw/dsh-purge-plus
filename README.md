@@ -15,7 +15,7 @@
 > **1.4.3 restores steer delivery**: reverts the two 1.4.2 patches that forced every prompt to followup (#85/#86) and adds #90, which latches wakes during the running phase so turn-tail messages are no longer stranded.
 > **1.4.4 adapts the red-team preset to official 0.2.x and adds a remote Kali drill host**: drops `toolFilter` / `backgroundMode` that the official subagent tool now rejects outright, and adds a `remote` section so a Windows host can drive a Kali box over SSH.
 > **2.0.1 points every address at this repository**: the install URLs, the in-panel update check and the CI repository guard all referenced the deleted upstream and returned 404. This is the current release; **80 patches** ship today.
-> Measured on an unpatched **0.2.2-rc.1** tree: **54 applied / 8 already / 12 missing_file / 6 skipped / 0 pending** — see [docs/compat-0.2.2.md](docs/compat-0.2.2.md).
+> Measured on an unpatched **0.2.2-rc.1** tree: **55 applied / 9 already / 12 missing_file / 4 na / 0 skipped / 0 pending** — see [docs/compat-0.2.2.md](docs/compat-0.2.2.md).
 > Changes and attribution: [NOTICE.md](NOTICE.md). Preconditions, no-warranty and legal terms: [DISCLAIMER.md](DISCLAIMER.md).
 > The upstream **non-commercial** term carries over: no paid resale, no gray- or black-market profit.
 
