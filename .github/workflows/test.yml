@@ -1,0 +1,95 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  syntax:
+    name: Syntax + import
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: node --check every shipped .js
+        run: |
+          set -euo pipefail
+          fail=0
+          for f in $(git ls-files '*.js' '*.mjs'); do
+            if ! node --check "$f"; then
+              echo "SYNTAX FAIL: $f"
+              fail=1
+            fi
+          done
+          exit $fail
+
+      - name: ESM entry imports
+        run: node --input-type=module -e "import('./lib/index.js').then(()=>console.log('IMPORT_OK'))"
+
+      - name: package.json parses and dshTarget is consistent
+        run: |
+          set -euo pipefail
+          node -e '
+            const j = require("./package.json");
+            const a = j.dsh?.dshTarget;
+            const b = j.dshTarget;
+            console.log("version      =", j.version);
+            console.log("dsh.version  =", j.dsh?.version);
+            console.log("dsh.dshTarget=", a);
+            console.log("dshTarget    =", b);
+            if (!a || !b) { console.error("dshTarget missing"); process.exit(1); }
+            if (a !== b) { console.error("dshTarget mismatch: " + a + " vs " + b); process.exit(1); }
+            if (j.version !== j.dsh?.version) { console.error("version mismatch"); process.exit(1); }
+          '
+
+  tests:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: gate.mjs
+        run: node test/gate.mjs
+
+      - name: patch table integrity
+        run: node scripts/check-patches.mjs
+
+  docs:
+    name: Doc consistency
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: release-notes.md first line matches package.json version
+        run: |
+          set -euo pipefail
+          version="$(node -p "require('./package.json').version")"
+          first="$(head -n 1 release-notes.md | tr -d '\r')"
+          if [ "$first" != "# ${version}" ]; then
+            echo "release-notes.md 首行必须是 # ${version}，现在是: ${first}"
+            exit 1
+          fi
+
+      - name: every docs/ link in the READMEs resolves
+        run: node scripts/check-links.mjs

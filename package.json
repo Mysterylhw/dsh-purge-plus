@@ -2,6 +2,14 @@
   "name": "dsh-purge",
   "version": "2.0.1",
   "description": "DeepSeek Harness 破甲：让所有模型都能破甲，不同模型可换不同提示词；默认提示词面向国模「小码酱」。Jailbreak for every model — swap prompts per model. 求 Star 收藏 ⭐ 如要二开，请查看署名要求部分",
+  "author": "Mysterylhw <https://github.com/Mysterylhw>",
+  "contributors": [
+    {
+      "name": "小杨",
+      "url": "https://github.com/YuJunZhiXue",
+      "note": "原作者 (original author)"
+    }
+  ],
   "type": "module",
   "main": "lib/index.js",
   "exports": {
@@ -41,7 +49,10 @@
     "embed-prompt": "node scripts/embed-default-prompt.mjs",
     "build:client": "node scripts/build-client.mjs",
     "test:gate": "node test/gate.mjs",
-    "test:cwd": "node test/cwd-variable.mjs"
+    "test:cwd": "node test/cwd-variable.mjs",
+    "test:patches": "node scripts/check-patches.mjs",
+    "test:links": "node scripts/check-links.mjs",
+    "check": "npm run test:patches && npm run test:links && npm run test:gate"
   },
   "license": "MIT",
   "keywords": [
