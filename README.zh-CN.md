@@ -49,10 +49,8 @@
 
 ## 目录
 
-- [赞助](#sponsor)
 - [介绍](#介绍)
 - [署名要求](#署名要求)
-- [违规商用公示](#违规商用公示)
 - [适配范围](#适配范围)
 - [安装](#安装)
 - [界面](#界面预览)
@@ -64,29 +62,11 @@
 
 ---
 
-<a id="sponsor"></a>
-
-## ☕ 赞助
-
-这个项目要是帮到你了，欢迎打赏。我是讨口子，施舍点~
-
-
-| 资产          | 地址                                             |
-| ----------- | ---------------------------------------------- |
-| USDT（TRC20） | `TV5ajPkRD8RH623Dx9mqvYZVNN8nPGRKid`           |
-| Solana      | `6x16GhRgLVpKFFXaU1seKNdx2rypspSJTL4dbpt6Xpwk` |
-| Ethereum    | `0xB68BD60C0e8c519513B7DF9bB147696815423B3E`   |
-| Bitcoin     | `bc1qu70yxkrtwnymt8ryluz9x8y8hqzune5340npht`   |
-
-
----
-
 ## 介绍
 
 **dsh-purge** 是装在本机官方 [DeepSeek Harness](https://www.deepseek.com/harness/) 上的网络安全红队评测插件。官方 **Web**（`dsh web`）和官方 **桌面端**（EXE）都支持，两边分开装、分开应用。
 
 Harness 不只是把问题交给模型。它还会在运行时改提示词、审批门、沙箱和会话格式。只看「模型答不答」，会把宿主拦截误当成模型拒绝。这个插件在你自己的安装里把这两层分开，用来做受控评测，也用来看默认策略该不该收紧。
-
 
 | 你会用到             | 它做什么                                            |
 | ---------------- | ----------------------------------------------- |
@@ -95,7 +75,6 @@ Harness 不只是把问题交给模型。它还会在运行时改提示词、审
 | **演练台**          | 正式版内置。授权后查看资产、技能和本机环境。只用于你有权管理的本机、离线靶标或已书面授权的演练 |
 | **宿主策略**         | 调整默认文案、权限策略和工具上限。官方能力保留，不另写一套身份                 |
 | **启动时**          | 自动再检查并应用。npm 升级盖掉 `node_modules` 之后不用手改文件       |
-
 
 不写死盘符。按 `$DSH_HOME`、dsh 启动器旁边的 `.dsh`，再退回 `~/.dsh`。不改 Harness 源码仓库，在 **设置 → Purge** 里点「应用」才写入。身份来自插件里的加密提示词，也就是提示词框默认显示的那一份。不读取宿主磁盘上的提示词文件。
 
@@ -111,32 +90,8 @@ Harness 不只是把问题交给模型。它还会在运行时改提示词、审
 
 不署名、隐瞒来源、改头换面据为己有，作者将依法追究责任。
 
----
-
-## 违规商用公示
-
-抖音直播账号 **「老张的ai」**（直播间显示 **「老张AI讲堂」**）把本仓库当收费货卖：直播间问价、当场收钱，不署名，也不守上面的非盈利条款。作者人就在场，对方照收。
-
-本项目免费、非盈利。拿它卖课、卖插件、卖 token、倒卖，许可当场作废，作者保留追究权利。
-
-2026-10-12 直播记录：
-
-<p align="center">
-  <img src="docs/notice/laozhang-live-1.jpg" width="360" alt="老张的ai 直播问价">
-  <img src="docs/notice/laozhang-live-2.jpg" width="360" alt="老张的ai 直播收钱">
-</p>
-
-对方微信名 **「老张的ai科技」**，直播间观众榜同号。被问到是不是本仓库开发者时，自称「老厉害了」；作者当场表示要投诉。
-
-<p align="center">
-  <img src="docs/notice/laozhang-wechat-1.jpg" width="420" alt="老张的ai科技 微信自称开发者">
-</p>
-
----
-
-### ⚠️ 严正法律免责与合规使用声明
-
-
+<details>
+<summary><strong>⚠️ 严正法律免责与合规使用声明（点击展开）</strong></summary>
 
 **免责声明：** 本项目为非营利开源项目，遵守国家法律法规及所在平台的相关规范，仅供学习与研究使用。不得将本项目用于任何违法违规用途；由此产生的后果由使用者自行承担。
 
@@ -162,9 +117,7 @@ Harness 不只是把问题交给模型。它还会在运行时改提示词、审
 9. **第三方独立性声明**：本项目属于完全独立的开源安全评测研究项目，与 DeepSeek 官方或其关联主体无任何隶属、商业合作、授权或官方背书关系。文中「官方」仅指评测对象为使用者本机安装的官方 DeepSeek Harness 软件包，**不代表** DeepSeek 官方开发、认可或担保本插件。
 10. **必须署名**：借用本项目的名称、思路、代码或提示词，必须署名并标明本仓库。不署名将依法追究责任。详见 [署名要求](#署名要求)。
 
-
-
-
+</details>
 
 ---
 
@@ -360,7 +313,7 @@ dsh-purge --uninstall
 
 ![设置页](docs/preview/settings-1.3.1.png)
 
-真机里长这样（设置 → Purge，v1.3.1，Windows 桌面端）：
+真机里长这样（设置 → Purge，Windows 桌面端）：
 
 ![真机设置页](docs/preview/app-settings-1.3.1.png)
 
@@ -394,7 +347,6 @@ dsh-purge --uninstall
 
 ![自己的服务器](docs/preview/own-servers.png)
 
-
 | 区域        | 说明                                                                                                         |
 | --------- | ---------------------------------------------------------------------------------------------------------- |
 | 设置 → 破甲   | 主入口。补丁、提示词、规则集、Skill 和演练台都在这一页                                                                            |
@@ -405,7 +357,6 @@ dsh-purge --uninstall
 | 自己的服务器    | 每行登记一个 IP 或完整主机名，保存后写入 `$DSH_HOME/net-scope-allow.txt`                                                     |
 | 规则集       | 多套 `AGENTS.md` / `CLAUDE.md`；启用写入 `$DSH_HOME`，删除从列表去掉                                                      |
 | Skill     | 导入压缩包或文件夹到当前宿主官方目录 `$DSH_HOME/skills/<id>/SKILL.md`（Web / 桌面各用自己的主目录，不写死盘符）；命中、加载、`/名称` 由 DSH 负责。也可自己删该文件夹 |
-
 
 ---
 
@@ -431,7 +382,6 @@ dsh-purge --edit
 /purge status | apply | revert | uninstall | edit | help
 /rules list | use <id> | create <id> | delete <id> | reset | help
 /skills list | import <压缩包或文件夹> | create <id> [说明] | delete <id> | help
-/rewind
 
 # 模型工具
 purge_status   purge_apply   purge_revert
@@ -439,7 +389,7 @@ purge_status   purge_apply   purge_revert
 
 设置页「应用」成功后会自动重启，以加载已改的包文件；也可手动点「重启」。补丁标题下有正式版和测试版。测试版跟 `beta` 分支。点「切换到正式版」会装回 master，并清掉钉选。正式版里选旧版本会固定在该版本，要回到最新再点「更新」。旧的测试标签不再列出。
 
-输入框旁的「回退一次」和「回退上一轮」跟官方 DSH `session.fork({ atSeq })`：撤回已进行的那一轮，新会话接上之前的上下文，旧会话归档，那句回到输入框，再发送会重新注入。聊天里 `/rewind` 同样可用。
+输入框旁的「回退一次」和「回退上一轮」跟官方 DSH `session.fork({ atSeq })`：撤回已进行的那一轮，新会话接上之前的上下文，旧会话归档，那句回到输入框，再发送会重新注入。
 
 **极简 / PTC 与标准不一致时**：同一任务在标准模式能跑、在极简或 PTC 被拦，通常是 preset 里 `run_code` 或 plan 拦截句没洗净，或内置 minimal 缺少 `agent-instructions`。请升到 **1.1.61+**，**完全退出宿主 → 清洗里应用 → 自动重启 → 新开一轮对话** 再试；只换 preset 不重应用，旧进程里的补丁不会更新。
 
@@ -493,7 +443,6 @@ DSH 会按顺序执行同一批中的 Bash 调用。旧版 dsh-purge 把默认�
 ```sh
 node --check lib/index.js
 node --check lib/core.js
-node --check lib/rewind.js
 node --check lib/skills.js
 node --check client.js
 ```
@@ -514,16 +463,12 @@ flowchart TD
   F --> G["注入插件加密默认（提示词框默认显示的那份）"]
 ```
 
-
-
 每次会话的覆盖：
 
 ```mermaid
 flowchart TD
   A["重启或新会话"] --> B["注入插件加密默认，不必点保存，不读宿主磁盘"]
 ```
-
-
 
 每一轮的提示词注入与规则集决策。左边三个输入就是你在 dsh-purge 面板里控制的东西，虚线表示它们各自驱动哪一步判定：
 
@@ -554,8 +499,6 @@ flowchart TD
   P -.-> G
 ```
 
-
-
 Skill 不进注入段：
 
 ```mermaid
@@ -564,8 +507,6 @@ flowchart LR
   B --> C["由 DSH 加载"]
   C --> D["卸载插件不删用户 Skill"]
 ```
-
-
 
 ---
 
@@ -606,7 +547,7 @@ flowchart LR
 - 改动范围是本机 `@deepseek-ai/*` 包里的渲染文案、默认策略和执行逻辑，以及用户目录下的覆盖文件与规则集。
 - 升级后原文对不上会显示跳过，这次应用仍算完成，不会乱改。
 - 不改动非 `@deepseek-ai` 的第三方插件源仓库（启动时的 CMD 无感会**尽力**修补已装的 doctor / market / 梁神 / mnemon，属运行时补丁）。
-- 安装走 npm 包名 `dsh-purge`：`dsh plugin --profile web add dsh-purge` 或 `dsh plugin --profile desktop add dsh-purge`。当前目录已是本仓库时 `add .`。registry 上不去再加 master.tar.gz。插件市场一键安装走同一个 npm 包。
+- 安装走 npm 包名 `dsh-purge`：`dsh plugin --profile web add dsh-purge` 或 `dsh plugin --profile desktop add dsh-purge`。当前目录已是本仓库时 `add .`。registry 上不去再加 main.tar.gz。插件市场一键安装走同一个 npm 包。
 
 ---
 

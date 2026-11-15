@@ -49,10 +49,8 @@
 
 ## Contents
 
-- [Sponsor](#sponsor)
 - [What this is](#what-this-is)
 - [Attribution required](#attribution-required)
-- [Unauthorized commercial use](#unauthorized-commercial-use)
 - [Supported hosts](#supported-hosts)
 - [Install](#install)
 - [Preview](#preview)
@@ -61,21 +59,6 @@
 - [How it works](#how-it-works)
 - [Restore](#restore)
 - [Releases](#releases)
-
----
-
-<a id="sponsor"></a>
-
-## ☕ Sponsor
-
-If this project helps you, send it over — I'm out here asking~
-
-| Asset | Address |
-| --- | --- |
-| USDT (TRC20) | `TV5ajPkRD8RH623Dx9mqvYZVNN8nPGRKid` |
-| Solana | `6x16GhRgLVpKFFXaU1seKNdx2rypspSJTL4dbpt6Xpwk` |
-| Ethereum | `0xB68BD60C0e8c519513B7DF9bB147696815423B3E` |
-| Bitcoin | `bc1qu70yxkrtwnymt8ryluz9x8y8hqzune5340npht` |
 
 ---
 
@@ -107,36 +90,8 @@ It only touches the official `@deepseek-ai` packages and local config on the use
 
 Using them without attribution, hiding the source, or passing them off as your own will be pursued.
 
----
-
-## Unauthorized commercial use
-
-Douyin live account **「老张的ai」** (room name **「老张AI讲堂」**) is selling this repository: taking fees in the live room, no attribution, and ignoring the non-profit rule above. The author was in the room. They still charged.
-
-This project is free and non-profit. Selling courses, the plugin, tokens, or reselling it voids the license on the spot. The author reserves the right to pursue it.
-
-Recorded 2026-10-12:
-
-<p align="center">
-  <img src="docs/notice/laozhang-live-1.jpg" width="360" alt="老张的ai live asking for a fee">
-  <img src="docs/notice/laozhang-live-2.jpg" width="360" alt="老张的ai live charging money">
-</p>
-
-WeChat name **「老张的ai科技」**, same handle as the live-room viewer board. Asked if they were this repo's developer, they said they were. The author said they would report it.
-
-<p align="center">
-  <img src="docs/notice/laozhang-wechat-1.jpg" width="420" alt="老张的ai科技 WeChat claiming to be the developer">
-</p>
-
----
-
-<a id="strict-legal--compliance-disclaimer"></a>
-
-<div>
-
-### ⚠️ <font color="red">Strict legal and compliance disclaimer</font>
-
-<font color="red">
+<details>
+<summary><strong>⚠️ Strict legal and compliance disclaimer (click to expand)</strong></summary>
 
 **Disclaimer:** This is a non-profit open-source project. It follows applicable laws and the rules of the platforms it uses, and is intended only for learning and research. Do not use it for any illegal or non-compliant purpose; the user bears any resulting consequences.
 
@@ -162,9 +117,7 @@ WeChat name **「老张的ai科技」**, same handle as the live-room viewer boa
 9. **No affiliation.** This is an independent open-source security-eval research project. It has no employment, commercial, authorization, or endorsement relationship with DeepSeek or its affiliates. "Official" here only means the eval target is the official DeepSeek Harness package on the user's machine. It does **not** mean DeepSeek developed, approved, or warrants this plugin.
 10. **Attribution is required.** If you borrow this project's name, ideas, code, or prompts, you must credit the author and name this repository. Failure to attribute will be pursued. See [Attribution required](#attribution-required).
 
-</font>
-
-</div>
+</details>
 
 ---
 
@@ -360,7 +313,7 @@ Plugin config lives in `cordis.patch.yml` (`postPrompt` is empty by default):
 
 ![Settings page](docs/preview/settings-1.3.1.png)
 
-In the real app (Settings → Purge, v1.3.1, Windows desktop):
+In the real app (Settings → Purge, Windows desktop):
 
 ![Settings page in the app](docs/preview/app-settings-1.3.1.png)
 
@@ -423,14 +376,13 @@ dsh-purge --edit
 /purge status | apply | revert | uninstall | edit | help
 /rules list | use <id> | create <id> | delete <id> | reset | help
 /skills list | import <zip-or-folder> | create <id> [description] | delete <id> | help
-/rewind
 
 purge_status   purge_apply   purge_revert
 ```
 
 After a successful Apply, the host restarts so patched packages load; you can also click **Restart** manually. Under the patch title are the stable release and the test release. The test release follows the `beta` branch. **Switch to stable** installs `main` and clears any pin. Picking an older stable version pins it; click **Update** to return to the latest. Old test tags are not listed.
 
-The composer **Undo once** and **Undo last round** follow official DSH `session.fork({ atSeq })`: the withdrawn turn is cut off, a new session keeps the earlier context, the old session is archived, and the line returns to the input so **send again** re-injects. `/rewind` does the same.
+The composer **Undo once** and **Undo last round** follow official DSH `session.fork({ atSeq })`: the withdrawn turn is cut off, a new session keeps the earlier context, the old session is archived, and the line returns to the input so **send again** re-injects.
 
 If the **same task works in standard but fails in minimal or PTC**, preset `run_code`, sandbox, or plan intercept text is often still uncleared, or built-in minimal is missing `agent-instructions`. Use **1.1.61+**, then **quit the host fully → Apply in Clean → restart → start a new chat**. Switching preset alone does not reload patches in the running process.
 
@@ -488,7 +440,6 @@ node --check lib/surface.js
 node --check lib/web.js
 node --check lib/desktop.js
 node --check lib/host.js
-node --check lib/rewind.js
 node --check lib/skills.js
 node --check client.js
 ```
@@ -597,7 +548,7 @@ What changed, and the zip, are on [Releases](https://github.com/Mysterylhw/dsh-p
 - Scope is rendered copy, defaults, and runtime logic inside local `@deepseek-ai/*` packages, plus override files and rule sets under the harness home.
 - After an upgrade, unmatched originals show as skipped. Apply still completes, and those files are left unchanged.
 - Third-party plugin *source repos* outside `@deepseek-ai` are left alone (CMD silence may **best-effort** patch installed doctor / market / liangshen / mnemon at runtime).
-- Install the npm package `dsh-purge`: `dsh plugin --profile web add dsh-purge` or `dsh plugin --profile desktop add dsh-purge`. From this repo, `add .`. If the registry is blocked, add the master.tar.gz URL instead. Hub one-click uses the same npm package.
+- Install the npm package `dsh-purge`: `dsh plugin --profile web add dsh-purge` or `dsh plugin --profile desktop add dsh-purge`. From this repo, `add .`. If the registry is blocked, add the main.tar.gz URL instead. Hub one-click uses the same npm package.
 
 ---
 
