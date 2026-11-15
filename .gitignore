@@ -35,3 +35,6 @@ default-prompt-inject.md
 /official-harness-payload.7z
 *.asar
 *.asar.bak
+
+# 自检日志（本地记录，不进仓库）
+docs/drift-log.txt
