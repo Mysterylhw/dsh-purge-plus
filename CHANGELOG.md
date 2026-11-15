@@ -7,7 +7,7 @@ Baseline: **1.2.0**. Everything below is what this fork adds, improves, or fixes
 
 ---
 
-## 1.4.5 — 发布到独立仓库，安装地址不再指向已删除的上游
+## 2.0.1 — 发布到独立仓库，安装地址不再指向已删除的上游
 
 ### 修复
 
@@ -24,6 +24,33 @@ Baseline: **1.2.0**. Everything below is what this fork adds, improves, or fixes
 
 - 已跟踪文件共 126 个、4.3 MB，无密钥、无 token、无 `.env`。
 - `.gitignore` 增补 `*.bak` / `*.bak-before-*`：本地编辑前的备份副本不再进仓库。
+
+### 并入自未发布的 1.4.5（0.2.2-rc.1 适配）
+
+#### 修复 / Fixed — 0.2.2-rc.1 兼容
+
+| 补丁 | 变化 |
+| --- | --- |
+| `#74 ASSEMBLE_BEFORE_PRESTEP` | 0.2.2 在 `claim()` 与 `assemble()` 之间插入了 `selection` / `toolSet` 解析，原来的两行相邻锚点不再匹配，补丁被静默 `skipped`。新增只锚 `const claimed` 单行的模式，注入点前移到 pre-step 入口。 |
+| `#67 AGENT_LOOP_MESSAGES_GUARD` | 同一段代码在 0.2.2 被 `try { }` 再包一层，缩进从 4 tabs 变 5 tabs。新增 5-tab 模式，旧 4-tab 模式保留以兼容 0.2.1。 |
+| `#82 DESKTOP_SHELL_PROFILE_FALLBACK` | 0.2.2 把 `lib/main.js` 里紧跟 import 的 region 头从 `packages/util/home-paths` 换成 `node_modules/.pnpm/mime@4.1.1`，旧锚点失效。新增只锚 import 单行的模式。 |
+
+#### 变更 / Changed
+
+- `dshTarget` 从 `0.2.1-rc.2` 提到 `0.2.2-rc.1`。
+
+#### 验证 / Verified
+
+0.2.2-rc.1 实机自检：80 条补丁，`applied 66 / skipped 7 / na 6 / missing_file 1`，`pending` 归零。
+剩余未应用项全部是「目标插件或预设未安装」的可选补丁：`dsh-liangshen`、`dsh-hooks-claude-code`、
+`dsh-hooks-codex`、自造 unrestricted 预设。
+
+#### 说明 / Note
+
+- 桌面密封包状态下补丁写在 `resources/app`，必须先把 `app.asar` 挪走再启动才生效；只重启不换包，仍是归档里的旧代码。
+- `scripts/compat-check.mjs` 对 `desktop-shell` 一族补丁（#45/#46/#82/#83/#84）会误报 `missing_file`：
+  它把 `DSH_HOME` 指向临时目录，`findDesktopAppExecutable()` 因此定位不到安装目录。
+  这一族补丁以宿主内 `patchStatus` 的结果为准。
 
 ---
 
@@ -435,31 +462,3 @@ DSH **0.2.1-rc.2**，82 条补丁：
 - **`{{cwd}}` 变量**：0.2.1 的 `dsh-agent-loop` 只注册 `provider` / `model`，裸写 `{{cwd}}` 会让宿主抛 `unknown prompt variable` 并打断整轮。**1.4.1 已修**：`lib/cwd-variable.js` 补注册该变量，`cordis.patch.yml` 不再发变量，`sanitizeAssemblySections` 兜底转义。详见上方 1.4.1 一节。
 - **导航图标**：依赖「按 label 找到自己那一行」，设置外壳若改文案渲染方式，图标会回落成齿轮（功能不受影响）。
 - **未做**：插件市场发布、Web 端与桌面端一键同步、i18n 化全部文案（目前中英双语硬编码在 `client.js` 的 `zh` / `en` 两套字典里）。
-
-
-## [1.4.5] - 2026-11-06
-
-### 修复 / Fixed — 0.2.2-rc.1 兼容
-
-| 补丁 | 变化 |
-| --- | --- |
-| `#74 ASSEMBLE_BEFORE_PRESTEP` | 0.2.2 在 `claim()` 与 `assemble()` 之间插入了 `selection` / `toolSet` 解析，原来的两行相邻锚点不再匹配，补丁被静默 `skipped`。新增只锚 `const claimed` 单行的模式，注入点前移到 pre-step 入口。 |
-| `#67 AGENT_LOOP_MESSAGES_GUARD` | 同一段代码在 0.2.2 被 `try { }` 再包一层，缩进从 4 tabs 变 5 tabs。新增 5-tab 模式，旧 4-tab 模式保留以兼容 0.2.1。 |
-| `#82 DESKTOP_SHELL_PROFILE_FALLBACK` | 0.2.2 把 `lib/main.js` 里紧跟 import 的 region 头从 `packages/util/home-paths` 换成 `node_modules/.pnpm/mime@4.1.1`，旧锚点失效。新增只锚 import 单行的模式。 |
-
-### 变更 / Changed
-
-- `dshTarget` 从 `0.2.1-rc.2` 提到 `0.2.2-rc.1`。
-
-### 验证 / Verified
-
-0.2.2-rc.1 实机自检：80 条补丁，`applied 66 / skipped 7 / na 6 / missing_file 1`，`pending` 归零。
-剩余未应用项全部是「目标插件或预设未安装」的可选补丁：`dsh-liangshen`、`dsh-hooks-claude-code`、
-`dsh-hooks-codex`、自造 unrestricted 预设。
-
-### 说明 / Note
-
-- 桌面密封包状态下补丁写在 `resources/app`，必须先把 `app.asar` 挪走再启动才生效；只重启不换包，仍是归档里的旧代码。
-- `scripts/compat-check.mjs` 对 `desktop-shell` 一族补丁（#45/#46/#82/#83/#84）会误报 `missing_file`：
-  它把 `DSH_HOME` 指向临时目录，`findDesktopAppExecutable()` 因此定位不到安装目录。
-  这一族补丁以宿主内 `patchStatus` 的结果为准。
