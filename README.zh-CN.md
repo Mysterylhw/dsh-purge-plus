@@ -15,6 +15,7 @@
 > **1.4.3 恢复「插话发送」**：回滚 1.4.2 里把 prompt() 一律改成 followup 的两个补丁（#85/#86），并新增 #90 真正闩锁 running 态的唤醒，turn 收尾窗口的消息不再滞留。
 > **1.4.4 红队预设适配官方 0.2.x，新增远端 Kali 演练机**：去掉官方 subagent 工具已硬拦截的 `toolFilter` / `backgroundMode`，并新增 `remote` 配置，让 Windows 主机能经 SSH 驱动 Kali。
 > **2.0.1 把所有地址指回本仓库**：安装地址、面板「检查更新」、CI 仓库判断原先全指向已删除的上游，一律 404。这是当前版本，**补丁共 80 条**。
+> 在未打补丁的 **0.2.2-rc.1** 原树上实测：**54 applied / 8 already / 12 missing_file / 6 skipped / 0 pending**，明细见 [docs/compat-0.2.2.md](docs/compat-0.2.2.md)。
 > 变更清单与署名要求见 [NOTICE.md](NOTICE.md)；使用前提、无担保与法律声明见 [DISCLAIMER.md](DISCLAIMER.md)。
 > 上游的**非商用**条款沿用：禁止商业售卖、付费倒卖与黑灰产牟利。
 

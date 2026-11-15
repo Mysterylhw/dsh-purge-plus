@@ -50,7 +50,7 @@ The upstream project requires attribution and a link back to its repository when
 - `#40 COMPLETE_PROMPT_KEEP_INJECT` 在 0.2.1 上原来一条 pattern 都不命中：0.2.1 在 `return transformed;` 与 `return {…}` 之间多插了一行 `const requiredContexts = new Set(…)`。状态是 `skipped` 不算失败，但重启前的校验仍能看到 `sections: … : [completeSection]`，于是判定「没洗过」并拒绝重启——表现为点「应用」后提示「清洗没有写进全部宿主，已取消重启」。
 - 拆成两条只认关键行的替换后，该补丁在 0.2.1 原树上直接 `applied`。
 
-完整变更见 [CHANGELOG.md](CHANGELOG.md) 与 [docs/compat-0.2.1.md](docs/compat-0.2.1.md)。
+完整变更见 [CHANGELOG.md](CHANGELOG.md)。逐代适配实测数据见 [docs/compat-0.2.2.md](docs/compat-0.2.2.md)（当前）与 [docs/compat-0.2.1.md](docs/compat-0.2.1.md)（上一代）。
 
 ### 1.4.0 的借鉴来源 / What 1.4.0 borrows
 
