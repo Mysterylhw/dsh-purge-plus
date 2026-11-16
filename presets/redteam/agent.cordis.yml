@@ -178,13 +178,17 @@
 
 # The skill REGISTRY lives in the host composition and is layered per scope:
 # these rows register into THIS preset's layer of it, so they need no realm.
-# `skill-filesystem` contributes local-root discovery for agents on this preset, and
-# `tool-skill` gives them the catalog and loader; the merged catalog also
-# carries whatever the deployment registered globally (repository plugins).
+# `skill-filesystem` contributes local-root discovery for agents on this preset;
+# the catalog and loader come from the host's own skill tooling, and the merged
+# catalog also carries whatever the deployment registered globally (repository
+# plugins). DSH 0.2.2-rc.3 no longer ships `@deepseek-ai/dsh-tool-skill`, so this
+# preset must not declare it — doing so makes the whole preset registered-broken.
 #
 # 技能库以 DSH 原生技能为准：技能文件放在 $DSH_HOME/skills（user-dsh 根，rank 400）
 # 或项目根的 .dsh/skills、.agents/skills，由 skill-filesystem 自动发现，原生
-# `skill` 工具与 /skill 命令直接可用。红队不再维护私有技能目录——历史技能已
+# `skill` 工具与 /skill 命令直接可用。目录与加载器由宿主自带的 skill 工具提供；
+# DSH 0.2.2-rc.3 起不再有 `@deepseek-ai/dsh-tool-skill` 包，预设里也不能声明它，
+# 否则整个预设会 registered-broken。红队不再维护私有技能目录——历史技能已
 # 迁入 $DSH_HOME/skills，技能库页面只做浏览。
 - id: skill-filesystem
   name: '@deepseek-ai/dsh-skill-filesystem'
