@@ -1187,8 +1187,15 @@ body:not([data-ds-dark-theme]) .dshp-auth-legal{background:var(--dsw-alias-bg-la
 		}
 
 		function shimKind(v) {
+			// patched = 插件写的 shim 在位；n/a = 本端不需要
 			if (v === "patched" || v === "n/a") return "ok";
+			// original = 脚本是原样（还没被插件改写），值得提醒但不是错误
 			if (v === "original") return "wait";
+			// binary = 文件在，但不是插件认识的文本 shim（被别的程序覆盖过、或
+			// 指向了另一个 runtime 目录里的同名启动器）。这属于「需要人看一眼」，
+			// 不是「坏了」—— 红色留给真正失败的状态。
+			if (v === "binary") return "wait";
+			// missing = 文件不存在；三个 shim 里 ps1 / unix 在 Windows 上本来就缺，正常
 			if (v === "missing" || !v) return "miss";
 			return "bad";
 		}
