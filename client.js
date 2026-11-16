@@ -1186,11 +1186,15 @@ body:not([data-ds-dark-theme]) .dshp-auth-legal{background:var(--dsw-alias-bg-la
 			return st || t("unknown");
 		}
 
-		function shimKind(v) {
+		function shimKind(v, surface) {
 			// patched = 插件写的 shim 在位；n/a = 本端不需要
 			if (v === "patched" || v === "n/a") return "ok";
-			// original = 脚本是原样（还没被插件改写），值得提醒但不是错误
-			if (v === "original") return "wait";
+			// original = 脚本保持原样。含义随宿主变：
+			//   web 端 —— 还没被插件改写，属于待办，黄色提醒；
+			//   桌面端 —— listShimDirsForPatch() 直接 return []，patchShim() 对
+			//   sealed runtime 也直接跳过，而且 Windows 的 dsh.cmd 是主动剥离 shim
+			//   （启动器注入后会闪控制台）。所以桌面端「原样」就是设计目标，绿色。
+			if (v === "original") return surface === "desktop" ? "ok" : "wait";
 			// binary = 文件在，但不是插件认识的文本 shim（被别的程序覆盖过、或
 			// 指向了另一个 runtime 目录里的同名启动器）。这属于「需要人看一眼」，
 			// 不是「坏了」—— 红色留给真正失败的状态。
@@ -2177,11 +2181,11 @@ body:not([data-ds-dark-theme]) .dshp-auth-legal{background:var(--dsw-alias-bg-la
 					),
 					h("div", { className: "dshp-metric" },
 						h("b", { style: { fontSize: 13, fontFamily: "var(--dshp-mono)", fontWeight: 500 } },
-							h("span", { className: "dshp-pill is-" + shimKind(s.shim_cmd) }, "cmd"),
+							h("span", { className: "dshp-pill is-" + shimKind(s.shim_cmd, s.surface) }, "cmd"),
 							" ",
-							h("span", { className: "dshp-pill is-" + shimKind(s.shim_ps1) }, "ps1"),
+							h("span", { className: "dshp-pill is-" + shimKind(s.shim_ps1, s.surface) }, "ps1"),
 							" ",
-							h("span", { className: "dshp-pill is-" + shimKind(s.shim_bin || "missing") }, "unix"),
+							h("span", { className: "dshp-pill is-" + shimKind(s.shim_bin || "missing", s.surface) }, "unix"),
 						),
 						h("span", null, (s.shim_cmd === "n/a" && s.shim_ps1 === "n/a" && (s.shim_bin === "n/a" || !s.shim_bin)) ? t("metric.shim.na") : t("metric.shim")),
 					),
