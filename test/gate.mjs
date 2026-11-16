@@ -358,5 +358,63 @@ console.log("\n== tool-gate ==");
   fs.rmSync(auditDir, { recursive: true, force: true });
 }
 
+// ---- preset-heal：清理引用了已删除官方包的 preset row ----
+{
+  const heal = await load("preset-heal.js");
+
+  // 假宿主目录：有 dsh-persona / dsh-tool-goal，没有 dsh-tool-skill
+  const fakeAi = fs.mkdtempSync(path.join(os.tmpdir(), "dshpurge-heal-ai-"));
+  for (const pkg of ["dsh-persona", "dsh-tool-goal"]) {
+    fs.mkdirSync(path.join(fakeAi, pkg), { recursive: true });
+  }
+
+  const yml = [
+    "- id: persona",
+    "  name: '@deepseek-ai/dsh-persona'",
+    "",
+    "- id: tool-skill",
+    "  name: '@deepseek-ai/dsh-tool-skill'",
+    "",
+    "- id: goal",
+    "  name: '@deepseek-ai/dsh-tool-goal'",
+  ].join("\n");
+
+  const r1 = heal.stripMissingOfficialPlugins(yml, fakeAi);
+  check("strips missing official plugin", r1.removed.includes("@deepseek-ai/dsh-tool-skill"),
+    JSON.stringify(r1.removed));
+  check("keeps surviving rows", r1.text.includes("- id: persona") && r1.text.includes("- id: goal"));
+  check("removed row is gone", !/^\s*-\s+id:\s+tool-skill\s*$/m.test(r1.text));
+
+  // disabled: true 的 row 引用不存在的包是无害的，不能删
+  const ymlDisabled = [
+    "- id: workflow-worker-thread",
+    "  name: '@deepseek-ai/dsh-workflow-worker-thread'",
+    "  disabled: true",
+  ].join("\n");
+  const r2 = heal.stripMissingOfficialPlugins(ymlDisabled, fakeAi);
+  check("keeps disabled row referencing missing package",
+    r2.text === ymlDisabled && r2.removed.length === 0, JSON.stringify(r2.removed));
+
+  // 第三方包的引用不归我们管（不在宿主目录里是正常的）
+  const ymlThird = [
+    "- id: third",
+    "  name: '@someone/third-plugin'",
+  ].join("\n");
+  const r3 = heal.stripMissingOfficialPlugins(ymlThird, fakeAi);
+  check("leaves third-party scope alone", r3.text === ymlThird && r3.removed.length === 0);
+
+  // 没有 aiBase 时不做任何判断，避免误删
+  const r4 = heal.stripMissingOfficialPlugins(yml, "");
+  check("no aiBase means no removal", r4.text === yml && r4.removed.length === 0);
+
+  // officialPackageExists
+  check("existing official package detected",
+    heal.officialPackageExists("@deepseek-ai/dsh-persona", fakeAi) === true);
+  check("missing official package detected",
+    heal.officialPackageExists("@deepseek-ai/dsh-tool-skill", fakeAi) === false);
+
+  fs.rmSync(fakeAi, { recursive: true, force: true });
+}
+
 console.log(`\n${fail === 0 ? "ALL PASS" : `${fail} FAILED`}  (${pass} passed)`);
 process.exit(fail === 0 ? 0 : 1);
