@@ -200,9 +200,6 @@
       - !!js dshHomePath('skills')
       - !!js dshHomePath('redteam/skills')
 
-- id: tool-skill
-  name: '@deepseek-ai/dsh-tool-skill'
-
 # ── goals ───────────────────────────────────────────────────────────────────
 
 # The goal service and session driver stay on the host plane, where the Gateway
